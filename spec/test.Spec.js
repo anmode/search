@@ -1,4 +1,5 @@
 import React from 'react';
+import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from '../src/App.jsx';
 
@@ -46,21 +47,24 @@ describe('App component tests', () => {
   });
 
   // Test 4: Hide suggestions on Escape key press (Task 2.1)
-  it('should hide suggestions when the Escape key is pressed', () => {
-    render(<App />);
-    const inputElement = screen.getByRole('textbox');
+ // Test 4: Hide suggestions on Escape key press (Task 2.1)
+it('should hide suggestions when the Escape key is pressed', () => {
+  render(<App />);
+  const inputElement = screen.getByRole('textbox');
 
-    // Simulate typing to show suggestions
-    fireEvent.change(inputElement, { target: { value: 'Fr' } });
+  // Simulate typing to show suggestions
+  fireEvent.change(inputElement, { target: { value: 'Fr' } });
 
-    // Simulate pressing the Escape key
-    fireEvent.keyDown(inputElement, { key: 'Escape', code: 'Escape' });
+  // Get the dropdown that contains the suggestions
+  const dropdown = screen.getByRole('list'); // Assuming the dropdown uses role="list"
+  expect(dropdown).toBeTruthy();  // Ensure it's there before hiding
 
-    // Check if suggestions are hidden (use toBeNull instead of not.toBeInTheDocument)
-    const dropdown = screen.queryByRole('list');
-    expect(dropdown).toBeNull();  // Dropdown should not exist after pressing Escape
-  });
+  // Simulate pressing the Escape key
+  fireEvent.keyDown(inputElement, { key: 'Escape', code: 'Escape' });
 
+  // Assert that the dropdown is hidden using display: none
+  expect(dropdown).toHaveStyle('display: none');
+});
   // Test 5: Ensure suggestions reappear when user resumes typing after pressing Escape (Task 2.2)
   it('should show suggestions again when typing after pressing Escape', () => {
     render(<App />);
